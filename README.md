@@ -1,2 +1,2 @@
 # AI-final-project
-好欸
+快點
