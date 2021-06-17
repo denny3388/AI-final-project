@@ -84,7 +84,7 @@ class DQN(object):
         
         # Initialize writer (紀錄 rewards 的東西)
         self.exp_name = 'exp1' # 實驗名稱
-        self.writer = SummaryWriter('reward/' + self.exp_name)
+        self.writer = SummaryWriter()
 
         self.use_gpu = use_gpu
         self.device = torch.device(
@@ -189,7 +189,7 @@ n_episodes = 5000
 max_step = 1000
 save_freq = 100           # save model frequency
 use_gpu = True            # use GPU ?
-load_model = True         # load model ?
+load_model = False         # load model ?
 
 model_dir = 'trained_models'
 
@@ -244,7 +244,7 @@ for i_episode in range(start_iter, n_episodes):
                 i_episode, t+1, rewards))
             fp.close()
 
-            dqn.writer.add_scalar('rewards', rewards, i_episode) 
+            dqn.writer.add_scalar('rewards', rewards, i_episode)
 
             break
 
