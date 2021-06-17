@@ -1,0 +1,5 @@
+要看紀錄的 reward 的話就在 terminal 輸入以下指令:
+tensorboard --logdir=[dqn.py的位置]/rewards/exp1
+
+e.g. 若是在實驗室的 GPU ->
+tensorboard --logdir=/eva_data/denny/AI/rewards/exp1

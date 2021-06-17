@@ -1,4 +1,4 @@
-"""
+'''"""
 @author: Viet Nguyen <nhviet1009@gmail.com>
 """
 import argparse
@@ -57,4 +57,38 @@ def test(opt):
 
 if __name__ == "__main__":
     opt = get_args()
-    test(opt)
+    test(opt)'''
+
+from numpy.core.fromnumeric import size
+from numpy.lib.npyio import save
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+import os
+from glob import glob
+import time
+from skimage import transform
+from skimage.color import rgb2gray
+import gym
+from gym_sokoban.envs.sokoban_env import SokobanEnv
+import matplotlib.pyplot as plt
+
+def preprocess_frame(frame):
+    gray = rgb2gray(frame)  # 轉灰階
+    normalized_frame = gray/255.0  # normalization
+    resized_img = transform.resize(normalized_frame, [84, 84])
+    return resized_img
+
+env = SokobanEnv()
+while 1:
+    env.reset()
+    img = env.get_image('human', 1)
+    state, reward, done, info = env.step(1)
+    print(state, type(state), state.shape)
+    plt.subplot(1,2,1)
+    plt.imshow(state)
+    plt.subplot(1,2,2)
+    plt.imshow(preprocess_frame(state))
+    plt.show()
+    input('Next...')

@@ -9,6 +9,7 @@ from glob import glob
 import time
 from skimage import transform
 from skimage.color import rgb2gray
+from torch.utils.tensorboard import SummaryWriter
 import gym
 from gym_sokoban.envs.sokoban_env import SokobanEnv
 
@@ -80,6 +81,10 @@ class DQN(object):
         self.gamma = gamma
         self.target_replace_iter = target_replace_iter
         self.memory_capacity = memory_capacity
+        
+        # Initialize writer (紀錄 rewards 的東西)
+        self.exp_name = 'exp1' # 實驗名稱
+        self.writer = SummaryWriter('reward/' + self.exp_name)
 
         self.use_gpu = use_gpu
         self.device = torch.device(
@@ -168,7 +173,6 @@ class DQN(object):
 '''------- Training -------'''
 
 env = SokobanEnv()
-#env = gym.make('CartPole-v0')
 
 # Environment parameters
 n_actions = env.action_space.n
@@ -239,6 +243,8 @@ for i_episode in range(start_iter, n_episodes):
             fp.write('Episode {}: {} time steps, total rewards {:.2f}\n'.format(
                 i_episode, t+1, rewards))
             fp.close()
+
+            dqn.writer.add_scalar('rewards', rewards, i_episode) 
 
             break
 
