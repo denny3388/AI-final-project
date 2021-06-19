@@ -77,7 +77,7 @@ class SokobanEnv(gym.Env):
 
         self._calc_reward()
         if moved_player == False and moved_box == False:
-            self.reward_last -= self.penalty_no_move
+            self.reward_last += self.penalty_no_move
 
         done = self._check_if_done()
 
