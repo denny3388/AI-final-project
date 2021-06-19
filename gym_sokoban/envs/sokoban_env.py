@@ -31,6 +31,7 @@ class SokobanEnv(gym.Env):
 
         # Penalties and Rewards
         self.penalty_for_step = -0.1
+        self.penalty_no_move = -0.5
         self.penalty_box_off_target = -3
         self.reward_box_on_target = 5
         self.reward_finished = 10
@@ -75,6 +76,8 @@ class SokobanEnv(gym.Env):
         '''
 
         self._calc_reward()
+        if moved_player == False and moved_box == False:
+            self.reward_last -= self.penalty_no_move
 
         done = self._check_if_done()
 
