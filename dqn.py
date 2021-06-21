@@ -12,6 +12,7 @@ from skimage.color import rgb2gray
 from torch.utils.tensorboard import SummaryWriter
 import gym
 from gym_sokoban.envs.sokoban_env import SokobanEnv
+import argparse
 
 ''' Reference: https://blog.csdn.net/GhostintheCode/article/details/102530451'''
 
@@ -21,7 +22,6 @@ def preprocess_frame(frame):
     normalized_frame = gray/255.0  # normalization
     resized_img = transform.resize(normalized_frame, [84, 84])
     return resized_img
-
 
 class Net(nn.Module):
     def __init__(self, n_states, n_actions):
@@ -107,6 +107,16 @@ class DQN(object):
             action = torch.max(actions_value, 0)[1].numpy()[0]  # 挑選最高分的 action
 
         return action
+    
+    def choose_action_test(self, state):
+        state = torch.FloatTensor(preprocess_frame(state)).unsqueeze(0)
+        if self.use_gpu:
+            x = state.to(self.device)
+        
+        actions_value = self.eval_net(x).cpu()
+        action = torch.max(actions_value, 0)[1].numpy()[0]  # 挑選最高分的 action
+
+        return action
 
     def store_transition(self, state, action, reward, next_state):
         # 打包 experience
@@ -169,10 +179,30 @@ class DQN(object):
         self.target_net.load_state_dict(params)
         self.eval_net.load_state_dict(params)
 
+def str2bool(x):
+    return x.lower() in ('true')
 
-'''------- Training -------'''
+def parse_args():
+    desc = "DQN"
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('--phase', type=str, default='train', help='[train / test]')
+    parser.add_argument('--use_gpu', type=str2bool, default=True, help='Use GPU?')
+    parser.add_argument('--load_model', type=str2bool, default=False, help='Load pretrained model?')
+    parser.add_argument('--model_dir', type=str, default='trained_models', help='The directory to store models')
+
+    return parser.parse_args()
+
+'''------- Main -------'''
 
 env = SokobanEnv()
+
+# args
+args = parse_args()
+if args is None:
+    exit()
+use_gpu = args.use_gpu
+load_model = args.load_model
+model_dir = args.model_dir
 
 # Environment parameters
 n_actions = env.action_space.n
@@ -188,70 +218,129 @@ memory_capacity = 5000
 n_episodes = 5000
 max_step = 1000
 save_freq = 100           # save model frequency
-use_gpu = True            # use GPU ?
-load_model = False         # load model ?
 
-model_dir = 'trained_models'
+env.set_maxsteps(max_step)
 
 # 建立 DQN
 dqn = DQN(n_states, n_actions, batch_size, lr, epsilon, gamma,
           target_replace_iter, memory_capacity, use_gpu)
 
-# load model
-model_list = glob(os.path.join(model_dir, '*.pt'))
-start_iter = 0
-if load_model and not len(model_list) == 0:
-    model_list.sort()
-    start_iter = int(model_list[-1].split('_')[-1].split('.')[0])
-    dqn.load(os.path.join(model_dir), start_iter)
-    print(" [*] Load SUCCESS (%.5d)" % start_iter)
+if args.phase == 'train':
 
-# 學習
-env.set_maxsteps(max_step)
+    print('----------Training start!----------')
 
-for i_episode in range(start_iter, n_episodes):
-    t = 0
-    rewards = 0
-    state = env.reset()
-    start_time = time.time()
+    # load model
+    if load_model == True:
+        model_list = glob(os.path.join(model_dir, '*.pt'))
+        start_iter = 0
+        if not len(model_list) == 0:
+            model_list.sort()
+            start_iter = int(model_list[-1].split('_')[-1].split('.')[0])
+            dqn.load(os.path.join(model_dir), start_iter)
+            print(" [*] Load SUCCESS (%.5d)" % start_iter)
 
-    while True:
-        env.render()
+    # 學習
+    for i_episode in range(start_iter, n_episodes):
+        t = 0
+        rewards = 0
+        state = env.reset()
+        start_time = time.time()
 
-        # 選擇action
-        action = dqn.choose_action(state)
-        next_state, reward, done, info = env.step(action)
+        while True:
+            env.render()
 
-        # 儲存 experience
-        dqn.store_transition(state, action, reward, next_state)
+            # 選擇action
+            action = dqn.choose_action(state)
+            next_state, reward, done, info = env.step(action)
 
-        # 累積reward
-        rewards += reward
+            # 儲存 experience
+            dqn.store_transition(state, action, reward, next_state)
 
-        # 有足夠experience後進行訓練
-        if dqn.memory_counter > memory_capacity:
-            dqn.learn()
+            # 累積reward
+            rewards += reward
 
-        # 進入下一state
-        state = next_state
+            # 有足夠experience後進行訓練
+            if dqn.memory_counter > memory_capacity:
+                dqn.learn()
 
-        if done:
-            print('Episode {} finished after {} time steps, total rewards {}. Current time = {:.2f}s'.format(
-                i_episode, t+1, rewards, time.time() - start_time))
+            # 進入下一state
+            state = next_state
 
-            fp = open("reward.txt", "a")
-            fp.write('Episode {}: {} time steps, total rewards {:.2f}\n'.format(
-                i_episode, t+1, rewards))
-            fp.close()
+            if done:
+                print('Episode {} finished after {} time steps, total rewards {}. Current time = {:.2f}s'.format(
+                    i_episode, t+1, rewards, time.time() - start_time))
 
-            dqn.writer.add_scalar('rewards', rewards, i_episode)
+                fp = open("reward.txt", "a")
+                fp.write('Episode {}: {} time steps, total rewards {:.2f}\n'.format(
+                    i_episode, t+1, rewards))
+                fp.close()
 
-            break
+                dqn.writer.add_scalar('rewards', rewards, i_episode)
 
-        t += 1
+                break
 
-    if i_episode % save_freq == 0:
-        dqn.save(os.path.join(model_dir), i_episode)
-        print(" [*] Save SUCCESS (%.5d)" % i_episode)
+            t += 1
 
-env.close()
+        if i_episode % save_freq == 0:
+            dqn.save(os.path.join(model_dir), i_episode)
+            print(" [*] Save SUCCESS (%.5d)" % i_episode)
+
+    env.close()
+
+if args.phase == 'test':
+
+    print('----------Testing start!----------')
+
+    # load model
+    model_list = glob(os.path.join(model_dir, '*.pt'))
+    start_iter = 0
+    if not len(model_list) == 0:
+        model_list.sort()
+        start_iter = int(model_list[-1].split('_')[-1].split('.')[0])
+        dqn.load(os.path.join(model_dir), start_iter)
+        print(" [*] Load SUCCESS (%.5d)" % start_iter)
+
+    # test
+    success = 0         # The number of success games
+    test_games = 100    # The number of test games
+
+    for i_episode in range(test_games):
+        t = 0
+        rewards = 0
+        state = env.reset()
+        start_time = time.time()
+
+        while True:
+            env.render()
+
+            # 選擇action
+            action = dqn.choose_action_test(state)
+            next_state, reward, done, info = env.step(action)
+
+            # 儲存 experience
+            dqn.store_transition(state, action, reward, next_state)
+
+            # 累積reward
+            rewards += reward
+
+            # 進入下一state
+            state = next_state
+            
+            if done or reward > 0:
+                print('reward = ', reward)
+                if reward > 0:
+                    success += 1
+                
+                print('Episode {} finished after {} time steps, success ratio = {}/{}. Current time = {:.2f}s'.format(
+                    i_episode, t+1, success, test_games, time.time() - start_time))
+
+                fp = open("test.txt", "a")
+                fp.write('Episode {} finished after {} time steps, success ratio = {}/{}. Current time = {:.2f}s\n'.format(
+                    i_episode, t+1, success, test_games, time.time() - start_time))
+                fp.close()
+
+                break
+
+            t += 1
+
+    env.close()
