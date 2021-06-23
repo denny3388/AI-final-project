@@ -54,7 +54,7 @@ In the directory which the `dqn.py` is, type the command below to supervise your
 
 
 ## Report Link
-[This report](https://docs.google.com/document/d/1xJukNOXyYxqJz3gwPA5f2EANCiOmYOJHpXHXBcki7HU/edit) includes the **methodology**, **experiments result**, some **discussion** and the **conclusion** of this project.
+[This report](https://github.com/hedy881028/AI-final-project/blob/main/Report.pdf) includes the **methodology**, **experiments result**, some **discussion** and the **conclusion** of this project.
 
 ## References
 
