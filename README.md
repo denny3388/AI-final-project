@@ -39,16 +39,40 @@ If you have pretrained model in `model_dir`, start **testing** via the command:
 ```
 > python dqn.py --phase test
 ```
-> The training reward will be store in `test.txt`
+> The testing result will be store in `test.txt`
 
-### Supervising the result
+### Supervising the training result
 
 In the directory which the `dqn.py` is, type the command below to supervise your model via [Tensorboard](https://pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html):
 ```
 > tensorboard --logdir=runs
 ```
 
+## Testing
+
+"**Success**" means that **at least one box** is push on the target, the success ratio will be recorded in `test.txt`.
+
+
 ## Report Link
-[HERE!](https://docs.google.com/document/d/1xJukNOXyYxqJz3gwPA5f2EANCiOmYOJHpXHXBcki7HU/edit)
+[This report](https://docs.google.com/document/d/1xJukNOXyYxqJz3gwPA5f2EANCiOmYOJHpXHXBcki7HU/edit) includes the **methodology**, **experiments result**, some **discussion** and the **conclusion** of this project.
+
+## References
+
+[1] [Sokoban gym environment](https://github.com/mpSchrader/gym-sokoban)
+
+[2] [Tetris gym environment](https://github.com/uvipen/Tetris-deep-Q-learning-pytorch)
+
+[3] [Reinforcement Learning 進階篇：Deep Q-Learning](https://medium.com/pyladies-taiwan/reinforcement-learning-%E9%80%B2%E9%9A%8E%E7%AF%87-deep-q-learning-26b10935a745)
+
+[4] [訓練DQN玩Atari Space Invaders](https://skywalker0803r.medium.com/%E8%A8%93%E7%B7%B4dqn%E7%8E%A9atari-space-invaders-9bc0fc264f5b)
+
+[5] [Playing Atari with Deep Reinforcement Learning](https://arxiv.org/abs/1312.5602)
+
+[6] [高估問題、Target Network、Double DQN](https://www.youtube.com/watch?v=X2-56QN79zc&list=PLvOO0btloRntS5U8rQWT9mHFcUdYOUmIC&index=2)
+
+[7] [Mnih, V., Kavukcuoglu, K., Silver, D. et al. Human-level control through deep reinforcement learning. Nature 518, 529–533 (2015).](https://doi.org/10.1038/nature14236)
+
+[8] [van Hasselt, H., Guez, A., & Silver, D. (2016). Deep Reinforcement Learning with Double Q-Learning. Proceedings of the AAAI Conference on Artificial Intelligence, 30(1).](https://ojs.aaai.org/index.php/AAAI/article/view/10295)
+
 
 
