@@ -1,2 +1,0 @@
-要看紀錄的 reward 的話就在 terminal 輸入以下指令:
-tensorboard --logdir=runs

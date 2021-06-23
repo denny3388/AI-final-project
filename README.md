@@ -14,20 +14,32 @@ Deep Q-learning 是將強化學習技巧之一的 Q-learning 與深度學習結�
 ├── trained_models          // Pretrained models
 ├── dqn.py                  
 ├── reward.txt              // record the rewards of each episode
+├── test.txt                // record the rewards of each episode
 ```
 
 ## Usage
 
 ### Train
-Before the training start , you can set some parameters (in`dqn.py`):
-- **used_gpu** -> Decide whether you want to use GPU for acceleration (default **True**)
-- **load_model** -> Decide whether you want to load pretrained model (default **False**)
-- **model_dir** -> The directory that stores your trained model (default **'trained_models'**)
+Before the training start , you can set some parameters in command line:
 
-After the parameters are setting properly, start training using the command:
+| params | option | default | description |
+| :-----| :---- | :---- | :---- |
+| --phase | train / test (string) | train | Train or Test ? |
+| --used_gpu | true / false (bool) | true | Use GPU ? |
+| --load_model | true / false (bool) | false | Load pretrained model ?|
+| --model_dir | any directory (string) | 'pretrained model' | Where to store your model ?|
+
+Start **training** using the command:
 ```
-> python dqn.py
+> python dqn.py --phase train [other params]
 ```
+> The training reward will be store in `reward.txt`
+
+If you have pretrained model in `model_dir`, start **testing** via the command:
+```
+> python dqn.py --phase test
+```
+> The training reward will be store in `test.txt`
 
 ### Supervising the result
 
@@ -35,20 +47,6 @@ In the directory which the `dqn.py` is, type the command below to supervise your
 ```
 > tensorboard --logdir=runs
 ```
-
-## Methodology
-
-### Training flow
-
-### DQN arcitechture
-
-### Action definition
-
-### Reward setting
-
-## Experiment
-
-## Conclusion
 
 ## Report Link
 [HERE!](https://docs.google.com/document/d/1xJukNOXyYxqJz3gwPA5f2EANCiOmYOJHpXHXBcki7HU/edit)
