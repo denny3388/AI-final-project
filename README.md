@@ -50,7 +50,7 @@ In the directory which the `dqn.py` is, type the command below to supervise your
 
 ## Testing
 
-"**Success**" means that **at least one box** is push on the target, the success ratio will be recorded in `test.txt`.
+"**Success**" means that **at least one box** is pushed on the target, the success ratio will be recorded in `test.txt`.
 
 
 ## Report Link
