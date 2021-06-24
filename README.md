@@ -35,11 +35,13 @@ Start **training** using the command:
 ```
 > The training reward will be store in `reward.txt`
 
+### Test
+
 If you have pretrained model in `model_dir`, start **testing** via the command:
 ```
 > python dqn.py --phase test
 ```
-> The testing result will be store in `test.txt`
+> "**Success**" means that **at least one box** is pushed on the target, the success ratio will be recorded in `test.txt`.
 
 ### Supervising the training result
 
@@ -47,11 +49,6 @@ In the directory which the `dqn.py` is, type the command below to supervise your
 ```
 > tensorboard --logdir=runs
 ```
-
-## Testing
-
-"**Success**" means that **at least one box** is pushed on the target, the success ratio will be recorded in `test.txt`.
-
 
 ## Report Link
 [This report](https://github.com/hedy881028/AI-final-project/blob/main/Report.pdf) includes the **methodology**, **experiments result**, some **discussion** and the **conclusion** of this project.
