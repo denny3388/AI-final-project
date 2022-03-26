@@ -9,7 +9,7 @@ Deep Q-learning 是將強化學習技巧之一的 Q-learning 與深度學習結�
 
 ## Sokoban introduction
 
-![]()
+![](/docs/Sokoban.png)
 
 ## Project overview
 
