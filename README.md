@@ -11,6 +11,8 @@ Deep Q-learning 是將強化學習技巧之一的 Q-learning 與深度學習結�
 
 ![](/docs/Sokoban.png)
 
+玩家需要控制遊戲角色 (綠色怪物) 上下左右移動，將箱子推至所有標記紅色叉叉的地點，即可通關。
+
 ## Project overview
 
 ```
